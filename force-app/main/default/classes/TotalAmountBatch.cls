@@ -10,7 +10,13 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
 
         for(Account a: accounts) {
             if(a.ParentId != null) {
-                parentUpdates.put(a.ParentId, a.Own_Amount__c);
+                Decimal value = a.Own_Amount__c;
+
+                if(parentUpdates.containsKey(a.parentId)) {
+                    value += parentUpdates.get(a.parentId);
+                } 
+                
+                parentUpdates.put(a.parentId, value);
             }
         } 
 
