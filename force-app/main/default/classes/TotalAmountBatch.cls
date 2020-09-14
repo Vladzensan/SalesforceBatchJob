@@ -32,11 +32,11 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
                 Account parent = accsToUpdate.get(parentId);
                 parent.Total_Amount__c += parentUpdates.get(parentId);
 
-                parentUpdates.remove(parentId);
-
                 if(parent.ParentId != null) {
                     grandParentUpdates.put(parent.ParentId, parentUpdates.get(parentId));
                 }
+
+                parentUpdates.remove(parentId);
             }
         }
 
