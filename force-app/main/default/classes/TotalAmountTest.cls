@@ -25,11 +25,11 @@ private class TotalAmountTest {
         Test.stopTest();
 
  
-        List<Account> accs = [SELECT Total_Amount__c, (SELECT Amount FROM Opportunities WHERE StageName = 'Closed Won') FROM Account WHERE Name LIKE :pattern ORDER BY Name ASC];
+        List<Account> accs = [SELECT Name, Total_Amount__c FROM Account WHERE Name LIKE :pattern];
         
-        for(Integer i = 0; i < MAX_NESTING; i++) {
-            Account a = accs.get(i);
-            System.assert(a.Total_Amount__c == (MAX_NESTING  - i) * OPPORTUNITY_AMOUNT);
+        for(Account a: accs) {
+            Integer opsTotal = Integer.valueOf(a.Name.substring(ACC_NAME_PREFIX.length()));
+            System.assert(a.Total_Amount__c == opsTotal * OPPORTUNITY_AMOUNT);
         }
 
 
