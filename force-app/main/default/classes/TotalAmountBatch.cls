@@ -10,11 +10,7 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
 
         for(Account a: accounts) {
             if(a.ParentId != null) {
-                Decimal value = a.Own_Amount__c;
-
-                if(parentUpdates.containsKey(a.parentId)) {
-                    value += parentUpdates.get(a.parentId);
-                } 
+                Decimal value = getNewUpdateValue(parentUpdates, a, a.Own_Amount__c); 
                 
                 parentUpdates.put(a.parentId, value);
             }
@@ -39,7 +35,8 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
                 parent.Total_Amount__c += parentUpdates.get(parentId);
 
                 if(parent.ParentId != null) {
-                    grandParentUpdates.put(parent.ParentId, parentUpdates.get(parentId));
+                    Decimal value = getNewUpdateValue(grandParentUpdates, parent, parentUpdates.get(parent.Id));
+                    grandParentUpdates.put(parent.ParentId, value);
                 }
 
                 parentUpdates.remove(parentId);
@@ -52,7 +49,8 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
             accsToUpdate.put(a.Id, a);
 
             if(a.ParentId != null) {
-                grandParentUpdates.put(a.ParentId, parentUpdates.get(a.Id));
+                Decimal value = getNewUpdateValue(grandParentUpdates, a, parentUpdates.get(a.Id));
+                grandParentUpdates.put(a.ParentId, value);
             }
         }
 
@@ -60,5 +58,15 @@ global class TotalAmountBatch implements Database.Batchable<sObject>  {
             updateParentsTotal(accsToUpdate, grandParentUpdates);
         }
 
+    }
+
+    private Decimal getNewUpdateValue(Map<Id, Decimal> parentUpdates, Account child, Decimal prefUpdate) {
+        Decimal newUpdate = prefUpdate;
+
+        if(parentUpdates.containsKey(child.ParentId)) {
+            newUpdate += parentUpdates.get(child.ParentId);
+        }
+
+        return newUpdate;
     }
 }

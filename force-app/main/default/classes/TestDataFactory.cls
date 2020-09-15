@@ -4,7 +4,7 @@ public class TestDataFactory {
 
         Account parent = null;
         for(Integer i = 0; i < nestingLevel; i++) {
-            Account a = new Account(Name = namePrefix +  2 * (nestingLevel - i), ParentId = (parent != null ? parent.Id : null));
+            Account a = new Account(Name = namePrefix +  2 * (nestingLevel - i), ParentId = (parent != null ? parent.Id : null)); // prefix means number of nodes behind current(including current)
             insert a;     
             parent = a;  
 
